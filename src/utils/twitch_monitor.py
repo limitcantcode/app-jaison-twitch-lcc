@@ -9,6 +9,8 @@ import yaml
 import asyncio
 from threading import Thread
 
+from utils.helper import get_twitch_sub_tier
+
 '''
 Class for interfacing with Twitch to track chat history and stream events using websockets
 For reference: https://dev.twitch.tv/docs/eventsub/
@@ -296,7 +298,6 @@ class TwitchContextMonitor():
     def _interval_chat_context_updater(self):
         while True:
             time.sleep(1)
-            logger.critical("Sending context") # debug
             content = ""
             for msg_o in self.chat_history:
                 content += "{}: {}\n".format(msg_o['name'], msg_o['message'])
@@ -372,13 +373,13 @@ class TwitchContextMonitor():
                                 self.request_jaison(message)
                             elif event['subscription']['type'] == 'channel.subscribe':
                                 if not event['event']['is_gift']:
-                                    self.request_jaison("Say thank you to {} for the tier {} sub.".format(event['event']['user_name'], event['event']['tier']))
+                                    self.request_jaison("Say thank you to {} for the tier {} sub.".format(event['event']['user_name'], get_twitch_sub_tier(event['event']['tier'])))
                             elif event['subscription']['type'] == 'channel.subscription.gift':
                                 message = "Say thank you" if event['event']['is_anonymous'] else "Say thank you to {}".format(event['event']['user_name'])
-                                message += " for the {} tier {} gifted subs.".format(event['event']['cumulative_total'], event['event']['tier'])
+                                message += " for the {} tier {} gifted subs.".format(event['event']['cumulative_total'], get_twitch_sub_tier(event['event']['tier']))
                                 self.request_jaison(message)
                             elif event['subscription']['type'] == 'channel.subscription.message':
-                                self.request_jaison("{} says {}. Thank them for their tier {} sub.".format(event['event']['user_name'], event['event']['message']['text'], event['event']['tier']))
+                                self.request_jaison("{} says {}. Thank them for their tier {} sub.".format(event['event']['user_name'], event['event']['message']['text'], get_twitch_sub_tier(event['event']['tier'])))
                             elif event['subscription']['type'] == 'channel.raid':
                                 self.request_jaison("Thank {} for raiding you with {} viewers.".format(event['event']['from_broadcaster_user_name'], event['event']['viewers']))
                             elif event['subscription']['type'] == 'channel.charity_campaign.donate':
