@@ -364,7 +364,7 @@ class TwitchContextMonitor():
                                     "name": event['event']['chatter_user_name'],
                                     "message": event['event']['message']['text']
                                 })
-                                self.chat_history = self.chat_history[:self.MAX_CHAT_LENGTH]
+                                self.chat_history = self.chat_history[-(self.MAX_CHAT_LENGTH):]
                             elif event['subscription']['type'] == 'channel.follow':
                                 self.request_jaison("Say thank you to {} for the follow.".format(event['event']['user_name']))
                             elif event['subscription']['type'] == 'channel.cheer':
