@@ -1,4 +1,3 @@
 twitch-bot-id: "786978930"
 twitch-target-id: "786978930"
-jaison-api-endpoint: "http://127.0.0.1:5001"
-api-token-filepath: "e:\\env\\twitch_api_tokens.json"
+jaison-api-endpoint: "http://127.0.0.1:7272"

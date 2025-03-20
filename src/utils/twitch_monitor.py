@@ -7,7 +7,6 @@ import time
 from utils.logging import logger
 import yaml
 import asyncio
-from threading import Thread
 
 from utils.helper import get_twitch_sub_tier
 
@@ -54,8 +53,8 @@ class TwitchContextMonitor():
 
     def run(self):
         self.event_ws = None
-        self.chat_updater_thread = Thread(target=self._interval_chat_context_updater,daemon=True)
-        self.chat_updater_thread.start()
+        # self.chat_updater_thread = Thread(target=self._interval_chat_context_updater,daemon=True)
+        # self.chat_updater_thread.start()
         self.context_id = "twitch-chat-monitor-lcc"
         self.context_name = "Twitch Chat"
         self.context_description = '''Last {} messages in Twitch chat. Each message is on a new line. Name of chatter is in front and message is everything after ":".'''.format(self.MAX_CHAT_LENGTH)
@@ -303,40 +302,37 @@ class TwitchContextMonitor():
                 content += "{}: {}\n".format(msg_o['name'], msg_o['message'])
 
             response = requests.put(
-                self.jaison_api_endpoint+'/context',
+                self.jaison_api_endpoint+'/api/context/custom',
                 headers={"Content-type":"application/json"},
                 json={
-                    "id": self.context_id,
-                    "content": content
+                    "context_id": self.context_id,
+                    "context_contents": content
                 }
             ).json()
 
             if response['status'] != 200:
                 logger.error(f"Failed to request update on chat context: {response['message']}")
                 requests.delete(
-                    self.jaison_api_endpoint+'/context',
+                    self.jaison_api_endpoint+'/api/context/custom',
                     headers={"Content-type":"application/json"},
-                    json={"id": self.context_id}
+                    json={"context_id": self.context_id}
                 )
                 requests.post(
-                    self.jaison_api_endpoint+'/context',
+                    self.jaison_api_endpoint+'/api/context/custom',
                     headers={"Content-type":"application/json"},
                     json={
-                        "id": self.context_id,
-                        "name": self.context_name,
-                        "description": self.context_description
+                        "context_id": self.context_id,
+                        "context_name": self.context_name,
+                        "context_description": self.context_description
                     }
                 )
 
     def request_jaison(self, request_msg):
         response = requests.post(
-            self.jaison_api_endpoint+'/run',
+            self.jaison_api_endpoint+'/api/context/request',
             headers={"Content-type":"application/json"},
             json={
-                "process_request": True,
-                "input_text": request_msg,
-                "output_text": True,
-                "output_audio": True
+                "content": request_msg
             }
         ).json()
 
