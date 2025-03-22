@@ -312,11 +312,6 @@ class TwitchContextMonitor():
 
             if response['status'] != 200:
                 logger.error(f"Failed to request update on chat context: {response['message']}")
-                requests.delete(
-                    self.jaison_api_endpoint+'/api/context/custom',
-                    headers={"Content-type":"application/json"},
-                    json={"context_id": self.context_id}
-                )
                 requests.post(
                     self.jaison_api_endpoint+'/api/context/custom',
                     headers={"Content-type":"application/json"},
