@@ -1,3 +1,8 @@
 twitch-bot-id: "786978930"
 twitch-target-id: "786978930"
 jaison-api-endpoint: "http://127.0.0.1:7272"
+jaison-ws-endpoint: "ws://127.0.0.1:7272"
+
+chat-mode: "ALL"
+chat-keywords: ""
+chat-bits-threshold: 100
