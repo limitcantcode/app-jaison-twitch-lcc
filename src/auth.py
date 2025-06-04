@@ -22,4 +22,5 @@ def redirect_code():
 def redirect_tokens():
     return "Complete!"
 
+print(f"Click this link to authenticate: {twitch.OAUTH_AUTHORIZE_URL}")
 app.run(port=PORT)
