@@ -384,7 +384,7 @@ Please keep these summaries to 6 sentences or less.
             
             async with websockets.connect(self.jaison_ws_endpoint) as ws:
                 job_request_response = requests.post(
-                    self.jaison_api_endpoint+"/api/operation/use",
+                    self.jaison_api_endpoint+"/api/operations/use",
                     headers={"Content-type":"application/json"},
                     json={
                         "op_type": "t2t",
