@@ -387,10 +387,10 @@ Please keep these summaries to 6 sentences or less.
                     self.jaison_api_endpoint+"/api/operations/use",
                     headers={"Content-type":"application/json"},
                     json={
-                        "op_type": "t2t",
+                        "op_type": "mcp",
                         "payload": {
-                            "system_prompt": self.SUMMARIZATION_PROMPT, 
-                            "user_prompt": self._generate_summary_input()
+                            "instruction_prompt": self.SUMMARIZATION_PROMPT, 
+                            "messages": [{"type": "raw", "message": self._generate_summary_input()}]
                         }
                     }
                 )
