@@ -18,7 +18,7 @@ You can name it whatever you want. Just give it the following `OAuth Redirect UR
 
 Once you created your new application, click `Manage` and copy the `Client ID` and `Client Secret` into your `.env` file following `.env-template`.
 
-5. Setup `config.yaml` to where [jaison-core](https://github.com/limitcantcode/jaison-core) is running, where you want to store your Twitch tokens on your computer (somewhere safe that you won't accidently leak), and your Twitch user id. You can get your Twitch user id [here](https://www.streamweasels.com/tools/convert-twitch-username-%20to-user-id/) and use that for both the `twitch-bot-id` and `twitch-target-id`. These should be surrounded by `"`, for example: `"786978930"`
+5. Setup `config.yaml` to where [jaison-core](https://github.com/limitcantcode/jaison-core) is running, where you want to store your Twitch tokens on your computer (somewhere safe that you won't accidently leak), and your Twitch user id. You can get your Twitch user id [here](https://www.streamweasels.com/tools/convert-twitch-username-%20to-user-id/) and use that for both the `twitch-bot-id` and `twitch-target-id`. These should be surrounded by `"`, for example: `"786978930"`. Available options for `chat-mode` are `ALL` (all messages appear like texting),`KEYWORD` (filter messages that specify keywords in `chat-keywords` comma-separated),`HIGHLIGHT` (filter only highlighted messages),`BITS` (filter only messages with at least `chat-bits-threshold` bits), and `DISABLE` (turn off).
 
 6. Authenticate the application. Run `python ./src/auth.py`. You should see a warning log starting with `Can't subscribe to events until authenticated.`. Click on the link there and authenticate through Twitch.
 

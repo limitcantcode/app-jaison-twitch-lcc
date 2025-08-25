@@ -3,6 +3,7 @@ twitch-target-id: "786978930"
 jaison-api-endpoint: "http://127.0.0.1:7272"
 jaison-ws-endpoint: "ws://127.0.0.1:7272"
 
-chat-mode: "ALL"
-chat-keywords: ""
+chat-mode: "DISABLE" # ALL, KEYWORD, HIGHLIGHT, BITS, DISABLE
+chat-keywords: "" # comma-separated
 chat-bits-threshold: 100
+summary-interval: 10 # seconds inbetween sending summaries of Twitch chat (0 to disable)
