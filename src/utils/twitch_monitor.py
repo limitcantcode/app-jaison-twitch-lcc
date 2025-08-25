@@ -91,17 +91,18 @@ Please keep these summaries to 6 sentences or less.
         self.context_description = '''This is a summary of changes in Twitch chat since the last Twitch Chat Summary.'''
         self.chat_history = [] # {"name","message"}
 
-        self.scheduler: AsyncIOScheduler = AsyncIOScheduler()
-        self.scheduler.start()
-        self.chat_update_timer = self.scheduler.add_job(
-            self._interval_chat_context_updater,
-            'interval',
-            seconds=10,
-            args=[],
-            id='chat_update_timer',
-            replace_existing=True
-        )
-        self.chat_summary: str = ""
+        self.chat_summary: str = "No previous summary"
+        if self.config['summary-interval'] > 0:
+            self.scheduler: AsyncIOScheduler = AsyncIOScheduler()
+            self.scheduler.start()
+            self.chat_update_timer = self.scheduler.add_job(
+                self._interval_chat_context_updater,
+                'interval',
+                seconds=10,
+                args=[],
+                id='chat_update_timer',
+                replace_existing=True
+            )
         
         # Twitch event sub setup
         self.event_ws = None
@@ -379,6 +380,8 @@ Please keep these summaries to 6 sentences or less.
         
     async def _interval_chat_context_updater(self):
         try:
+            if len(self.chat_history) == 0: return
+            
             # generate new summary
             summary = ""
             
@@ -387,7 +390,7 @@ Please keep these summaries to 6 sentences or less.
                     self.jaison_api_endpoint+"/api/operations/use",
                     headers={"Content-type":"application/json"},
                     json={
-                        "op_type": "mcp",
+                        "role": "mcp",
                         "payload": {
                             "instruction_prompt": self.SUMMARIZATION_PROMPT, 
                             "messages": [{"type": "raw", "message": self._generate_summary_input()}]
@@ -395,7 +398,7 @@ Please keep these summaries to 6 sentences or less.
                     }
                 )
                 if job_request_response.status_code != 200:
-                    raise Exception(f"Failed to register chat context: {response.status_code} {response.reason}")
+                    raise Exception(f"Failed to register chat context: {job_request_response.status_code} {job_request_response.reason}")
                 
                 parsed_job_request = job_request_response.json()
                 job_id = parsed_job_request['response']['job_id']
@@ -405,7 +408,9 @@ Please keep these summaries to 6 sentences or less.
                     event, status = data[0], data[1]
                     if event.get('response', {}).get('job_id') == job_id:
                         if not event.get('response', {}).get("finished", False):
-                            summary += event['response'].get('content', "")
+                            summary += event['response'].get('result', {}).get('content', "")
+                        elif event.get('response', {}).get("finished", False) and not event.get('response', {}).get("success", False):
+                            raise Exception(f"Failed to summarize chat: {job_request_response.status_code} {job_request_response.reason}")
                         else:
                             break
                 
